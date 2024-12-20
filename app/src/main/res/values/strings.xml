@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">DetailDesk</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="productName">Product Name</string>
+    <string name="generic_error">Something wrong happend. Please try again.</string>
+    <string name="sign_in">Sign In</string>
+    <string name="email_error">Please insert a valid email.\n</string>
+    <string name="empty_password_error">Password cannot be empty.</string>
+    <string name="donthaveanacc">Don\'t have an account? </string>
+    <string name="signup">Sign Up</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="alreadyhaveacc">Already have an Account?</string>
+    <string name="password_error">Your password should have at least six digits and include one digit, one lower case letter and one upper case letter.</string>
+    <string name="password_match_error">Passwords do not match.</string>
+    <string name="userName">Username</string>
+    <string name="hello">Hello,</string>
+    <string name="signout">Sign Out</string>
+    <string name="sign_out_title">Do you want to Sign Out?</string>
+    <string name="cancel">Cancel</string>
+    <string name="sign_out_description">You have to login again.</string>
+    <string name="add_product">Uplaod</string>
+    <string name="retry">Retry</string>
+</resources>
