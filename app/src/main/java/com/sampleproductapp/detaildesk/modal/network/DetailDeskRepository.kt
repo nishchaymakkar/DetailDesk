@@ -149,20 +149,6 @@ class DetailDeskRepository @Inject constructor(
     }
 
 
-    //get all Products
-    suspend fun getAllProducts(): Result<List<Product>> {
-        return try {
-            val product = detailDeskApiService.getAllProducts()
-            Result.success(product)
-        }catch (e: IOException) {
-            Result.failure(e)
-        }catch (e: HttpException) {
-            Result.failure(e)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
 }
 
 @Module

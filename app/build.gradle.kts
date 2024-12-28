@@ -2,14 +2,15 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+    id("kotlin-kapt")
 
 }
 
 android {
     namespace = "com.sampleproductapp.detaildesk"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.sampleproductapp.detaildesk"
@@ -46,7 +47,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.6.0"
     }
     packaging {
         resources {
@@ -84,56 +85,58 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //dagger
-    implementation ("com.google.dagger:hilt-android:2.49")
+    implementation (libs.hilt.android)
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    ksp ("com.google.dagger:hilt-compiler:2.48")
-
-
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt (libs.hilt.compiler)
 
 
-    implementation( "androidx.compose.material:material:1.7.4")
-    implementation("androidx.compose.material:material-icons-extended:1.7.4")
+
+
+    implementation( libs.androidx.material)
+    implementation(libs.androidx.material.icons.extended)
     implementation(kotlin("script-runtime"))
 
-    implementation( "androidx.compose.ui:ui-graphics:1.7.4" )// Or the latest version
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation( "androidx.palette:palette-ktx:1.0.0")
+    implementation( libs.ui.graphics )// Or the latest version
+    implementation(libs.coil.compose)
+    implementation( libs.androidx.palette.ktx)
 
     implementation(libs.androidx.compose.animation)
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.core.splashscreen)
     // Retrofit with Kotlin serialization Converter
 
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.okhttp)
+    implementation(libs.coil3.coil.compose)
     // Retrofit
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation(libs.retrofit)
 // Retrofit with Scalar Converter
-    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.converter.scalars)
+    implementation(libs.converter.gson)
     // Kotlin serialization
     implementation(libs.kotlinx.serialization.json)
-    implementation("org.mongodb:mongodb-driver-sync:4.8.0")
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.3")
-    implementation("com.google.accompanist:accompanist-permissions:0.30.0")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.30.0")
+    coreLibraryDesugaring (libs.desugar.jdk.libs)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.accompanist.swiperefresh)
 
     // For Play Integrity (Recommended)
-    implementation ("com.google.firebase:firebase-appcheck-playintegrity:17.0.1")
-    implementation("dev.chrisbanes.haze:haze-jetpack-compose:0.4.1")
-    implementation("com.exyte:animated-navigation-bar:1.0.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
-    implementation( "androidx.compose.animation:animation:1.7.5")
-    implementation ("androidx.camera:camera-core:1.4.1")
-    implementation ("androidx.camera:camera-camera2:1.1.0")
-    implementation ("androidx.camera:camera-lifecycle:1.4.1")
-    implementation ("androidx.camera:camera-view:1.4.1")
-    implementation("androidx.camera:camera-extensions:1.4.1")
-    implementation ("com.google.guava:guava:31.1-android")
-    implementation("com.google.accompanist:accompanist-pager:0.30.0")
-    implementation ("androidx.paging:paging-runtime:3.2.1")
-    implementation ("androidx.paging:paging-compose:3.2.1")
-    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+    implementation (libs.firebase.appcheck.playintegrity)
+    implementation(libs.haze.jetpack.compose)
+    implementation(libs.logging.interceptor)
+    implementation( libs.androidx.compose.animation)
+    implementation (libs.androidx.camera.core)
+    implementation (libs.androidx.camera.camera2)
+    implementation (libs.androidx.camera.lifecycle)
+    implementation (libs.androidx.camera.view)
+    implementation(libs.androidx.camera.extensions)
+    implementation(libs.accompanist.pager)
+    implementation (libs.androidx.paging.runtime.ktx)
+
+    implementation (libs.androidx.paging.compose)
+    implementation (libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.paging)
 
 }

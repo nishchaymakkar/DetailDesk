@@ -2,9 +2,11 @@
 
 package com.sampleproductapp.detaildesk.ui.screens.profilescreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +18,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -24,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,24 +57,34 @@ fun ProfileScreen(
     reStartApp: (Any) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileScreenViewModel = hiltViewModel(),
+    popUp: () -> Unit
 ) {
     ProfileScreenContent(
         onSignOutClick = { viewModel.onSignOutClick(reStartApp)},
-        username = ""
+        username = "",
+        popUp = {popUp}
     )
 }
+
 @ExperimentalMaterialApi
 @ExperimentalMaterial3Api
 @Composable
 fun ProfileScreenContent(
     modifier: Modifier = Modifier,
     onSignOutClick: () -> Unit,
-
+    popUp: () -> Unit,
     username: String?,
 ){
+    Scaffold(
+        modifier.fillMaxSize()
+    ) { it ->
+    Box(modifier
+        .padding(it)
+        .fillMaxSize()
+       ){
+
     Column (
         modifier = modifier
-            .fillMaxSize().padding(top = 40.dp)
             .background(color = MaterialTheme.colorScheme.onPrimary),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
@@ -250,4 +265,23 @@ fun ProfileScreenContent(
             }
         }
     }
+        Row (
+            modifier = modifier
+                .fillMaxWidth()
+                   .align(Alignment.TopCenter)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.Start
+        ) {
+            IconButton(
+                onClick = {popUp()},
+                modifier = modifier
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = null
+                )
+            }
+        }
+}
+}
 }

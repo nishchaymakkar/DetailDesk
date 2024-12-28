@@ -1,5 +1,6 @@
 package com.sampleproductapp.detaildesk.ui.screens.loginscreen
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -71,6 +72,7 @@ class SignInViewModel @Inject constructor(
                     _loginResult.value = Result.success(Unit)
                     _loginState.value = LoginUiState.Success(loginResponse)
                     saveLoginData(loginResponse)
+                    Log.d("bearer token"," ${loginResponse.sessionToken}")
                      openAndPopUp(HomeScreen)
 
                 } else {

@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -141,7 +142,20 @@ fun AddProductScreenContent(
                 modifier = modifier.padding(it),
                 contentAlignment = Alignment.Center,
                 content = {
-
+                    Row (
+                        modifier = modifier.fillMaxWidth().align(Alignment.TopCenter),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        IconButton(
+                            onClick = {popUp()},
+                            modifier = modifier
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                    }
                     Column(modifier.padding(top = 50.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         ImageSelectorUI()
                         ProductNameTextField(value = uiState.productName,
@@ -159,15 +173,7 @@ fun AddProductScreenContent(
                         })
                     }
                     if (isUploading) { CircularProgressIndicator()   }
-                    IconButton(
-                        onClick = {popUp()},
-                        modifier = modifier.align(Alignment.TopStart)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
+
                 }
             )
         }

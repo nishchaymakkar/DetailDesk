@@ -115,7 +115,10 @@ fun DetailDeskApp(){
                     ProfileScreen(reStartApp = {navigate -> navController.navigate(navigate){
                         launchSingleTop = true
                         popUpTo(0) { inclusive = true }
-                    } })
+                    } },
+                        popUp = {
+                            navController.popBackStack()
+                        })
                 }
 
                 composable<AddProductScreen> {

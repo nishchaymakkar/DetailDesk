@@ -1,16 +1,26 @@
+@file:OptIn(ExperimentalPagingApi::class)
+
 package com.sampleproductapp.detaildesk.modal.network
 
 import android.content.Context
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.room.Room
 import com.sampleproductapp.detaildesk.modal.data.Login
 import com.sampleproductapp.detaildesk.modal.data.LoginResponse
 import com.sampleproductapp.detaildesk.modal.data.Product
 import com.sampleproductapp.detaildesk.modal.data.SignUp
 import com.sampleproductapp.detaildesk.modal.data.User
 import com.sampleproductapp.detaildesk.modal.datastore.DataStoreRepository
+import com.sampleproductapp.detaildesk.modal.local.ProductDao
+import com.sampleproductapp.detaildesk.modal.local.ProductDatabase
+import com.sampleproductapp.detaildesk.modal.local.ProductEntity
 import com.sampleproductapp.detaildesk.modal.network.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -27,14 +37,22 @@ import retrofit2.http.Query
 import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
 
-const val  BASE_URL = "http://192.168.1.5:8080/detailDesk/"
+const val  BASE_URL = "http://192.168.1.7:8080/detailDesk/"
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
 
-
+    @Provides
+    @Singleton
+    fun provideBeerDatabase(@ApplicationContext context: Context): ProductDatabase {
+        return Room.databaseBuilder(
+            context,
+            ProductDatabase::class.java,
+            "product.db"
+        ).build()
+    }
     @Provides
     @Singleton
     fun provideOkHttpClient(context: Context, dataStoreRepository: DataStoreRepository): OkHttpClient {
@@ -60,6 +78,23 @@ object NetworkModule {
         return retrofit.create(DetailDeskApiService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideProductPager(productDb: ProductDatabase, productApi: DetailDeskApiService): Pager<Int, ProductEntity> {
+     return   Pager(
+            config = PagingConfig(pageSize = 10),
+         remoteMediator = ProductRemoteMediator(
+             productDb = productDb,
+             productApi = productApi
+         ),
+                pagingSourceFactory = {
+               productDb.dao.pagingSource()
+            }
+        )
+
+    }
+
+
 }
 
 interface DetailDeskApiService {
@@ -76,7 +111,10 @@ interface DetailDeskApiService {
         @Part productImage: MultipartBody.Part
     ):Response<Void>
 
-    @GET("getAll")
-    suspend fun getAllProducts() : List<Product>
+    @GET("getAll/page")
+    suspend fun getAllProducts(
+    @Query("page") page: Int,
+    @Query("size") size: Int,
+    ) : List<ProductDto>
 
 }

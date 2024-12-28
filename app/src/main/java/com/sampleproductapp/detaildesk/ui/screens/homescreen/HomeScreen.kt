@@ -5,7 +5,7 @@ package com.sampleproductapp.detaildesk.ui.screens.homescreen
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,13 +14,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.outlined.Person
@@ -28,24 +23,24 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberAsyncImagePainter
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.sampleproductapp.detaildesk.modal.data.Product
-import com.sampleproductapp.detaildesk.ui.components.ErrorScreen
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 
 @Composable
@@ -55,81 +50,53 @@ fun HomeScreen(
     addProduct: () -> Unit,
     viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
-    HomeScreenContent(modifier = modifier,
-        navigatePS = { navigatePS()},
-        addProduct = {addProduct() },
-        uiState = viewModel.productUiState,
-        retryAction = viewModel::getProductsFromApi
-    )
-}
+    val products = viewModel.productPagingFlow.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
+    LaunchedEffect(key1 = products.loadState) {
+        if(products.loadState.refresh is LoadState.Error) {
+            Toast.makeText(
+                context,
+                "Error: " + (products.loadState.refresh as LoadState.Error).error.message,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
 
-@Composable
-fun HomeScreenContent(modifier: Modifier = Modifier,
-                      uiState: ProductUiState,
-                      retryAction: () -> Unit,
-                      navigatePS: () -> Unit,
-                      addProduct: () -> Unit) {
-    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                colors = TopAppBarColors(
-//                    containerColor = MaterialTheme.colorScheme.onSecondary,
-//                    titleContentColor = MaterialTheme.colorScheme.primary,
-//                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
-//                    actionIconContentColor = MaterialTheme.colorScheme.primary,
-//                    scrolledContainerColor = MaterialTheme.colorScheme.onPrimary
-//
-//                ),
-//                title = { },
-//                actions = {
-//                    IconButton(
-//                        onClick = {navigatePS()}
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Outlined.Person,
-//                            contentDescription = null
-//                        )
-//                    }
-//                }
-//            )
-//        },
-        content = { it ->
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .padding(it),
-                contentAlignment = Alignment.Center,
-                content = {
-                    IconButton(
-                        onClick = {navigatePS()},
-                        modifier = modifier.align(Alignment.TopEnd)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = null
-                        )
+    Box(modifier.fillMaxSize()){
+        if (products.loadState.refresh is LoadState.Loading) {
+            CircularProgressIndicator(
+                modifier.align(Alignment.Center)
+            )
+        }else {
+
+            LazyColumn(
+                modifier = modifier.fillMaxSize()
+            ) {
+                    items(count = products.itemCount){index ->
+                        val item = products[index]
+                        item?.let { ProductItem(product = it) }
+
                     }
-                    when (uiState) {
-                        is ProductUiState.Loading -> {
-                            CircularProgressIndicator()
-                        }
-                        is ProductUiState.Success -> {
-                            Log.d("HomeScreenContent", "Success: ${uiState.products}")
-                            ProductList(products = uiState.products)
-                        }
-                        is ProductUiState.Error -> {
-                            ErrorScreen(retryAction = retryAction, modifier = Modifier.fillMaxSize())
-                        }
 
-
+                   item {
+                    if (products.loadState.append is LoadState.Loading) {
+                        CircularProgressIndicator()
                     }
                 }
-            )
-        },
-        floatingActionButton = {
+            }
+            IconButton(
+                onClick = {navigatePS()},
+                modifier = modifier.align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Person,
+                    contentDescription = null
+                )
+            }
             FloatingActionButton(
-                onClick = { addProduct()}
+                onClick = { addProduct()},
+                modifier.align(Alignment.BottomEnd).padding(10.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.AddAPhoto,
@@ -137,26 +104,12 @@ fun HomeScreenContent(modifier: Modifier = Modifier,
                 )
             }
         }
-    )
-
-}
-
-@Composable
-fun ProductList(
-    products: List<Product>,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        itemsIndexed(products) {index, item ->
-            ProductItem(product = item)
-        }
-
     }
 }
+
+
+
+
 
 @Composable
 fun ProductItem(
@@ -184,8 +137,11 @@ val byteArray = product.productImage.toBitmap()
                             contentDescription = null)
 
 
-                    Row(modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.onPrimary),
+                    Row(
+                        modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.onPrimary),
                         horizontalArrangement = Arrangement.SpaceAround
                     ){
                         if (product.productName != null) {

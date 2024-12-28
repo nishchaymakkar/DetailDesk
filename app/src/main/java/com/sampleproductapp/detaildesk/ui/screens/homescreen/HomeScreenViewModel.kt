@@ -7,51 +7,35 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.map
 import coil.network.HttpException
 import com.sampleproductapp.detaildesk.modal.data.Product
+import com.sampleproductapp.detaildesk.modal.local.ProductEntity
+import com.sampleproductapp.detaildesk.modal.mappers.toProduct
 import com.sampleproductapp.detaildesk.modal.network.DetailDeskRepository
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val detailDeskRepository: DetailDeskRepository
+    pager: Pager<Int, ProductEntity>
 ) : ViewModel() {
-    var currentPage = 1
-    val pageSize = 10
-    var productUiState: ProductUiState by mutableStateOf(ProductUiState.Loading)
-        private set
-
-    init {
-        viewModelScope.launch {
-            getProductsFromApi()
+    val productPagingFlow = pager
+        .flow
+        .map {pagingData ->
+            pagingData.map { it.toProduct() }
         }
-    }
-
-    fun getProductsFromApi() {
-        viewModelScope.launch {
-            productUiState = ProductUiState.Loading
-            try {
-                val result = detailDeskRepository.getAllProducts()
-                val filteredProducts = result.getOrThrow()
-                productUiState = ProductUiState.Success(filteredProducts)
-                Log.d("products list", "success ${result.getOrThrow().size}")
-            } catch (exception: Exception) {
-                Log.e("HomeScreenViewModel", "Error: ${exception.localizedMessage}")
-                productUiState = when (exception) {
-                    is IOException -> ProductUiState.Error("Network error occurred. Please check your connection.")
-                    is HttpException -> ProductUiState.Error("Server error occurred. Please try again later.")
-                    else -> ProductUiState.Error("An unknown error occurred. Please try again.")
-                }
-            }
-        }
-    }
+        .cachedIn(viewModelScope)
 }
 
-sealed interface ProductUiState {
-    data class Success(val products: List<Product>) : ProductUiState
-    data class Error(val error: String) : ProductUiState
-    object Loading : ProductUiState
-}
+
