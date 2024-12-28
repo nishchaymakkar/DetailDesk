@@ -111,7 +111,7 @@ interface DetailDeskApiService {
         @Part productImage: MultipartBody.Part
     ):Response<Void>
 
-    @GET("getAll/page")
+    @GET("getAll")
     suspend fun getAllProducts(
     @Query("page") page: Int,
     @Query("size") size: Int,
