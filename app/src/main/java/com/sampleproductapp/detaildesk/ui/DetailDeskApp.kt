@@ -68,7 +68,6 @@ fun resources(): Resources {
     LocalConfiguration.current
     return LocalContext.current.resources
 }
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun DetailDeskApp(){
     val appState = rememberAppState()
@@ -92,7 +91,7 @@ fun DetailDeskApp(){
         ){it ->
 
             NavHost(
-                modifier = Modifier,
+                modifier = Modifier.padding(it),
                 navController = navController,
                 startDestination = SplashScreen
             ){

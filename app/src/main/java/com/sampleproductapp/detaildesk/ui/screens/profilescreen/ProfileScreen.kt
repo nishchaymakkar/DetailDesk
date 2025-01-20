@@ -60,6 +60,7 @@ fun ProfileScreen(
     popUp: () -> Unit
 ) {
     ProfileScreenContent(
+        modifier = modifier,
         onSignOutClick = { viewModel.onSignOutClick(reStartApp)},
         username = "",
         popUp = {popUp}
@@ -70,7 +71,7 @@ fun ProfileScreen(
 @ExperimentalMaterial3Api
 @Composable
 fun ProfileScreenContent(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     onSignOutClick: () -> Unit,
     popUp: () -> Unit,
     username: String?,

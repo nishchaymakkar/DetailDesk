@@ -7,6 +7,7 @@ package com.sampleproductapp.detaildesk.ui.screens.addproductscreen
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,6 +61,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -68,6 +72,10 @@ import com.sampleproductapp.detaildesk.BuildConfig
 import com.sampleproductapp.detaildesk.R
 import com.sampleproductapp.detaildesk.ui.components.BasicButton
 import com.sampleproductapp.detaildesk.ui.components.ProductNameTextField
+import com.sampleproductapp.detaildesk.ui.screens.addproductscreen.di.NetworkUtils
+import com.sampleproductapp.detaildesk.ui.screens.addproductscreen.worker.RetryUploadWorker
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 
 @Composable
@@ -88,6 +96,23 @@ fun AddProductScreen(
                 Toast.makeText(context, "Failed to Upload Product", Toast.LENGTH_SHORT).show()
             }
         }
+
+        //viewModel.enqueueRetryWorker(context)
+        NetworkUtils.registerNetworkCallback(
+            context = context,
+            onNetworkAvailable = {
+                val workRequest = OneTimeWorkRequestBuilder<RetryUploadWorker>()
+                    .build()
+                // Retry uploads when the network becomes available
+                WorkManager.getInstance(context).enqueue(
+                    workRequest
+                )
+
+            },
+            onNetworkLost = {
+                // Handle network lost
+            }
+        )
     }
 
     val uiState by viewModel.uiState

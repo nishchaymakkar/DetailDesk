@@ -37,7 +37,7 @@ import retrofit2.http.Query
 import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
 
-const val  BASE_URL = "http://192.168.1.7:8080/detailDesk/"
+const val  BASE_URL = "http://192.168.1.2:8080/detailDesk/"
 
 @Module
 @InstallIn(SingletonComponent::class)

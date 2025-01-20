@@ -27,7 +27,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -62,8 +64,38 @@ fun HomeScreen(
             ).show()
         }
     }
+Scaffold (
+    topBar = {
+        TopAppBar(
+            backgroundColor = MaterialTheme.colorScheme.onPrimary,
+            title = {},
+            actions = {
+                IconButton(
+                    onClick = {navigatePS()},
+                    modifier = modifier
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = null
+                    )
+                }
+            }
+        )
+    },
+    floatingActionButton = {
+        FloatingActionButton(
+            onClick = { addProduct()},
+            modifier.padding(10.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.AddAPhoto,
+                contentDescription = null
+            )
+        }
+    }
 
-    Box(modifier.fillMaxSize()){
+){innerpadding ->
+    Box(modifier.fillMaxSize().padding(innerpadding)){
         if (products.loadState.refresh is LoadState.Loading) {
             CircularProgressIndicator(
                 modifier.align(Alignment.Center)
@@ -71,40 +103,28 @@ fun HomeScreen(
         }else {
 
             LazyColumn(
-                modifier = modifier.fillMaxSize()
+                modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                    items(count = products.itemCount){index ->
-                        val item = products[index]
-                        item?.let { ProductItem(product = it) }
+                items(count = products.itemCount){index ->
+                    val item = products[index]
+                    item?.let { ProductItem(product = it) }
 
-                    }
+                }
 
-                   item {
+                item {
                     if (products.loadState.append is LoadState.Loading) {
                         CircularProgressIndicator()
                     }
                 }
             }
-            IconButton(
-                onClick = {navigatePS()},
-                modifier = modifier.align(Alignment.TopEnd)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Person,
-                    contentDescription = null
-                )
-            }
-            FloatingActionButton(
-                onClick = { addProduct()},
-                modifier.align(Alignment.BottomEnd).padding(10.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AddAPhoto,
-                    contentDescription = null
-                )
-            }
+
+
         }
     }
+}
+
 }
 
 

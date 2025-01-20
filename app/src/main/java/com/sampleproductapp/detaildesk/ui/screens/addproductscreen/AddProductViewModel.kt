@@ -14,6 +14,9 @@ import androidx.lifecycle.viewModelScope
 import coil3.Bitmap
 import com.sampleproductapp.detaildesk.BuildConfig
 import com.sampleproductapp.detaildesk.modal.network.DetailDeskRepository
+import com.sampleproductapp.detaildesk.ui.screens.addproductscreen.data.DetailDeskUploadRepository
+import com.sampleproductapp.detaildesk.ui.screens.addproductscreen.data.entity.PendingUpload
+import com.sampleproductapp.detaildesk.ui.screens.addproductscreen.di.NetworkUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +30,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
+    private val detailDeskUploadRepository: DetailDeskUploadRepository,
     private val detailDeskRepository: DetailDeskRepository
 ): ViewModel() {
 
@@ -100,22 +104,35 @@ class AddProductViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val imageBitmap = bitmaps.value
-                val selectedImageUri = selectedImageUri.value
+                val isConnected = NetworkUtils.isNetworkAvailable(context)
+
+                if (!isConnected) {
+                    // Handle offline scenario: Save the data locally
+                    selectedImageUri.value?.let {
+                        val pendingUpload = PendingUpload(
+                            productName = productName ?: "",
+                            imageUri  = it.toString()
+                        )
+                        detailDeskUploadRepository.savePendingUpload(pendingUpload)
+                        _publishEventResult.value = Result.success(Unit)
+                    }
 
 
-                val result = when {
-                    imageBitmap != null -> detailDeskRepository.uploadProduct(productName, imageBitmap, context)
-                    selectedImageUri != null -> detailDeskRepository.uploadProductUri(productName, selectedImageUri, context)
-                    else -> throw Exception("Image not selected")
-                }
-
-                if (result.isSuccess) {
-                    _publishEventResult.value = Result.success(Unit)
-                    onSuccess()
+                    onFailure() // Notify the user that the upload is delayed
                 } else {
-                    _publishEventResult.value = Result.failure(Exception("Upload failed"))
-                    onFailure()
+
+                    // Handle online upload
+                    val result =
+                        selectedImageUri.value?.let {
+                        detailDeskRepository.uploadProductUri(productName,
+                            it, context)
+                    }
+                    if (result!!.isSuccess) {
+                        _publishEventResult.value = Result.success(Unit)
+                        onSuccess()
+                    } else {
+                        throw Exception("Upload failed")
+                    }
                 }
             } catch (e: Exception) {
                 _publishEventResult.value = Result.failure(e)
@@ -125,4 +142,5 @@ class AddProductViewModel @Inject constructor(
             }
         }
     }
+
 }
