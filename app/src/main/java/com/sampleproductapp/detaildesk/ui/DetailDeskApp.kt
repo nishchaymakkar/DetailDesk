@@ -2,6 +2,8 @@ package com.sampleproductapp.detaildesk.ui
 
 import android.annotation.SuppressLint
 import android.content.res.Resources
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +40,7 @@ import com.sampleproductapp.detaildesk.ui.screens.profilescreen.ProfileScreen
 import com.sampleproductapp.detaildesk.ui.screens.signupscreen.SignUpScreen
 import com.sampleproductapp.detaildesk.ui.screens.splashscreen.SplashScreen
 import kotlinx.coroutines.CoroutineScope
-
+const val FAB_EXPLODE_BOUNDS_KEY = "FAB_EXPLODE_BOUNDS_KEY"
 
 @Composable
 fun rememberAppState(
@@ -68,6 +70,7 @@ fun resources(): Resources {
     LocalConfiguration.current
     return LocalContext.current.resources
 }
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DetailDeskApp(){
     val appState = rememberAppState()
@@ -89,58 +92,69 @@ fun DetailDeskApp(){
                 )
             },
         ){it ->
-
-            NavHost(
-                modifier = Modifier.padding(it),
-                navController = navController,
-                startDestination = SplashScreen
-            ){
-                composable <SplashScreen>{
-                    SplashScreen(
-                        onAppStart = {navigate -> navController.navigate(navigate){
-                            launchSingleTop = true
-                            popUpTo<SplashScreen> { inclusive = true }
-                        }
-                        }
-                    )
-                }
-
-                composable <HomeScreen>{
-                    HomeScreen(navigatePS = {navController.navigate(ProfileScreen)},
-                        addProduct = {navController.navigate(AddProductScreen)})
-                }
-
-                composable<ProfileScreen>{
-                    ProfileScreen(reStartApp = {navigate -> navController.navigate(navigate){
-                        launchSingleTop = true
-                        popUpTo(0) { inclusive = true }
-                    } },
-                        popUp = {
-                            navController.popBackStack()
-                        })
-                }
-
-                composable<AddProductScreen> {
-                    AddProductScreen(
-                        popUp = {navController.popBackStack()}
-                    )
-                }
-                composable<SignInScreen>{
-                    SignInScreen(navigate = {navigate -> navController.navigate(navigate){
-                        launchSingleTop = true
-                        popUpTo(0){ inclusive = true}
-                    } })
-                }
-                composable<SignUpScreen>{
-                    SignUpScreen(
-                        navigate = { navigate ->
-                            navController.navigate(navigate) {
-                                popUpTo(0) { inclusive = true }
+            SharedTransitionLayout {
+                NavHost(
+                    modifier = Modifier.padding(it),
+                    navController = navController,
+                    startDestination = SplashScreen
+                ){
+                    composable <SplashScreen>{
+                        SplashScreen(
+                            onAppStart = {navigate -> navController.navigate(navigate){
+                                launchSingleTop = true
+                                popUpTo<SplashScreen> { inclusive = true }
                             }
-                        }, popUp = {navController.popBackStack()})
-                }
+                            }
+                        )
+                    }
 
+                    composable <HomeScreen>{
+                        HomeScreen(navigatePS = {navController.navigate(ProfileScreen)},
+                            addProduct = {navController.navigate(AddProductScreen)},
+                            animatedVisiblityScope = this
+                        )
+                    }
+
+                    composable<ProfileScreen>{
+                        ProfileScreen(reStartApp = {navigate -> navController.navigate(navigate){
+                            launchSingleTop = true
+                            popUpTo(0) { inclusive = true }
+                        } },
+                            popUp = {
+                                navController.popBackStack()
+                            })
+                    }
+
+                    composable<AddProductScreen> {
+                        AddProductScreen(
+                            modifier = Modifier
+                                .sharedBounds(
+                                    sharedContentState = rememberSharedContentState(
+                                        key = FAB_EXPLODE_BOUNDS_KEY
+                                    ),
+                                    animatedVisibilityScope = this
+                                ),
+                            popUp = {navController.popBackStack()}
+                        )
+                    }
+                    composable<SignInScreen>{
+                        SignInScreen(navigate = {navigate -> navController.navigate(navigate){
+                            launchSingleTop = true
+                            popUpTo(0){ inclusive = true}
+                        } })
+                    }
+                    composable<SignUpScreen>{
+                        SignUpScreen(
+                            navigate = { navigate ->
+                                navController.navigate(navigate) {
+                                    popUpTo(0) { inclusive = true }
+                                }
+                            }, popUp = {navController.popBackStack()})
+                    }
+
+                }
             }
+
 
         }
     }

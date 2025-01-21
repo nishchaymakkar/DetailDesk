@@ -6,6 +6,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -43,14 +46,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.sampleproductapp.detaildesk.modal.data.Product
+import com.sampleproductapp.detaildesk.ui.FAB_EXPLODE_BOUNDS_KEY
 
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(
+fun SharedTransitionScope.HomeScreen(
     modifier: Modifier = Modifier,
     navigatePS: () -> Unit,
     addProduct: () -> Unit,
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: HomeScreenViewModel = hiltViewModel(),
+    animatedVisiblityScope: AnimatedVisibilityScope
 ) {
     val products = viewModel.productPagingFlow.collectAsLazyPagingItems()
     val context = LocalContext.current
@@ -85,7 +91,12 @@ Scaffold (
     floatingActionButton = {
         FloatingActionButton(
             onClick = { addProduct()},
-            modifier.padding(10.dp)
+            modifier.sharedBounds(
+                sharedContentState = rememberSharedContentState(
+                    key = FAB_EXPLODE_BOUNDS_KEY
+                ),
+                animatedVisibilityScope = animatedVisiblityScope
+            )
         ) {
             Icon(
                 imageVector = Icons.Default.AddAPhoto,

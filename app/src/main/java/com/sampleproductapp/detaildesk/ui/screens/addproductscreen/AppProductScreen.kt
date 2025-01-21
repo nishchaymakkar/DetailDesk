@@ -80,7 +80,7 @@ import kotlin.time.DurationUnit
 
 @Composable
 fun AddProductScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     popUp: () -> Unit,
     viewModel: AddProductViewModel = hiltViewModel()
 ) {
@@ -130,7 +130,7 @@ fun AddProductScreen(
 @Composable
 fun AddProductScreenContent(
     isUploading: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     popUp: () -> Unit,
     uiState: AddProductUiState ,
     onProductNameChange: (String) -> Unit,
@@ -138,6 +138,7 @@ fun AddProductScreenContent(
 ) {
 
     Scaffold(
+        modifier = modifier,
 //        topBar = {
 //            TopAppBar(
 //                colors = TopAppBarColors(
@@ -164,16 +165,16 @@ fun AddProductScreenContent(
 //        },
         content = { it ->
             Box(
-                modifier = modifier.padding(it),
+                modifier = Modifier.padding(it),
                 contentAlignment = Alignment.Center,
                 content = {
                     Row (
-                        modifier = modifier.fillMaxWidth().align(Alignment.TopCenter),
+                        modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         IconButton(
                             onClick = {popUp()},
-                            modifier = modifier
+                            modifier = Modifier
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -181,16 +182,16 @@ fun AddProductScreenContent(
                             )
                         }
                     }
-                    Column(modifier.padding(top = 50.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Column(Modifier.padding(top = 50.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         ImageSelectorUI()
                         ProductNameTextField(value = uiState.productName,
                             onNewValue =onProductNameChange,
-                            modifier = modifier
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                         )
                         BasicButton(text = R.string.add_product,
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(horizontal = 24.dp)
                                 .fillMaxWidth(),
                             action = {
