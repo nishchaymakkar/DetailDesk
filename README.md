@@ -2,6 +2,11 @@
 
 DetailDesk is an Android application that allows users to efficiently manage and organize detailed information, notes, and data records. The app provides an intuitive user interface and powerful features to streamline documentation and retrieval of essential details.
 
+## Screenshot
+<img src="https://github.com/user-attachments/assets/d14f599a-b016-4978-8a6d-673bb5cf5b88" alt="Home Screen" width="200"/>
+<img src="https://github.com/user-attachments/assets/0b4203c8-b6b7-404f-9c32-77733ff59549" alt="Detail Entry" width="200"/>
+
+
 ## Features
 
 - **Organized Data Management**: Store and manage structured data efficiently.
@@ -31,12 +36,6 @@ DetailDesk is an Android application that allows users to efficiently manage and
 
 ## API Setup
 Ensure your backend API is running and update the API URLs in the app's configuration file.
-
-## Screenshot
-<img src="https://github.com/user-attachments/assets/d14f599a-b016-4978-8a6d-673bb5cf5b88" alt="Home Screen" width="200"/>
-<img src="https://github.com/user-attachments/assets/0b4203c8-b6b7-404f-9c32-77733ff59549" alt="Detail Entry" width="200"/>
-
-
 
 
 ## Contribution
