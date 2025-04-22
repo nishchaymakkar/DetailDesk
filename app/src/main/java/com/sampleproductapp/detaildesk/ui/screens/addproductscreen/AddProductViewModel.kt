@@ -39,6 +39,8 @@ class AddProductViewModel @Inject constructor(
     }
     private val _publishEventResult = MutableLiveData<Result<Unit>>(null)
     val publishEventResult: LiveData<Result<Unit>> = _publishEventResult
+
+
     private var _imageFileUri: Uri? = null
     val imageFileUri: Uri? get() = _imageFileUri
 

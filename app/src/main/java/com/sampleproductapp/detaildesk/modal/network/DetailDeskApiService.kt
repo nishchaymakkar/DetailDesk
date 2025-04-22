@@ -37,7 +37,7 @@ import retrofit2.http.Query
 import javax.inject.Singleton
 import java.util.concurrent.TimeUnit
 
-const val  BASE_URL = "http://192.168.1.2:8080/detailDesk/"
+const val  BASE_URL = "http://10.12.101.15:8080/detailDesk/"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -80,10 +80,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideProductPager(productDb: ProductDatabase, productApi: DetailDeskApiService): Pager<Int, ProductEntity> {
+    fun provideProductPager(@ApplicationContext context: Context,
+                            productDb: ProductDatabase,
+                            productApi: DetailDeskApiService): Pager<Int, ProductEntity> {
      return   Pager(
-            config = PagingConfig(pageSize = 10),
+            config = PagingConfig(pageSize = 1),
          remoteMediator = ProductRemoteMediator(
+             context = context,
              productDb = productDb,
              productApi = productApi
          ),

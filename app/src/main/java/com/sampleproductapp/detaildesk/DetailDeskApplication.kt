@@ -11,6 +11,7 @@ import com.sampleproductapp.detaildesk.modal.network.DetailDeskRepository
 import com.sampleproductapp.detaildesk.ui.screens.addproductscreen.worker.RetryUploadWorker
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import kotlin.printStackTrace
 
 @HiltAndroidApp
 class DetailDeskApplication: Application(), Configuration.Provider {
@@ -23,6 +24,21 @@ class DetailDeskApplication: Application(), Configuration.Provider {
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
+
+
+    override fun onCreate() {
+        super.onCreate()
+
+        try {
+            val cursorWindowClass = Class.forName("android.database.CursorWindow")
+            val field = cursorWindowClass.getDeclaredField("sCursorWindowSize")
+            field.isAccessible = true
+            field.set(null, 100 * 1024 * 1024) // 100 MB
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
 }
 
 class RetryWorkerFactory@Inject constructor(

@@ -94,7 +94,7 @@ fun DetailDeskApp(){
         ){it ->
             SharedTransitionLayout {
                 NavHost(
-                    modifier = Modifier.padding(it),
+                    modifier = Modifier,
                     navController = navController,
                     startDestination = SplashScreen
                 ){

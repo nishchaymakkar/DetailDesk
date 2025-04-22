@@ -68,7 +68,6 @@ import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.sampleproductapp.detaildesk.BuildConfig
 import com.sampleproductapp.detaildesk.R
 import com.sampleproductapp.detaildesk.ui.components.BasicButton
 import com.sampleproductapp.detaildesk.ui.components.ProductNameTextField

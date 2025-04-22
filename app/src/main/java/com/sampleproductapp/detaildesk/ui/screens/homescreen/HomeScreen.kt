@@ -32,7 +32,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -45,8 +46,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.compose.rememberAsyncImagePainter
 import com.sampleproductapp.detaildesk.modal.data.Product
 import com.sampleproductapp.detaildesk.ui.FAB_EXPLODE_BOUNDS_KEY
+import java.io.File
 
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -73,7 +76,14 @@ fun SharedTransitionScope.HomeScreen(
 Scaffold (
     topBar = {
         TopAppBar(
-            backgroundColor = MaterialTheme.colorScheme.onPrimary,
+
+            colors = TopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                scrolledContainerColor = MaterialTheme.colorScheme.surface
+            ),
             title = {},
             actions = {
                 IconButton(
@@ -103,6 +113,7 @@ Scaffold (
                 contentDescription = null
             )
         }
+
     }
 
 ){innerpadding ->
@@ -148,7 +159,7 @@ fun ProductItem(
     modifier: Modifier = Modifier) {
 
 
-val byteArray = product.productImage.toBitmap()
+//val byteArray = product.productImage.toBitmap()
 
         Card(
             elevation = CardDefaults.cardElevation(
@@ -161,11 +172,17 @@ val byteArray = product.productImage.toBitmap()
                     .aspectRatio(16 / 9f),
                 content = {
 
+                    Image(
+                        painter = rememberAsyncImagePainter(File(product.productImage)),
+                        contentDescription = null,
+                        modifier = modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
 
-                        Image(bitmap = byteArray!!.asImageBitmap(),
-                            modifier = modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = null)
+//                        Image(bitmap = byteArray!!.asImageBitmap(),
+//                            modifier = modifier.fillMaxSize(),
+//                            contentScale = ContentScale.Crop,
+//                            contentDescription = null)
 
 
                     Row(

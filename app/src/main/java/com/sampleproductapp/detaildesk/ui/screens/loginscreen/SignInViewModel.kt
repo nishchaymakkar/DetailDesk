@@ -88,7 +88,7 @@ class SignInViewModel @Inject constructor(
         }
 
     }
-    fun saveLoginData(login: LoginResponse) {
+    private fun saveLoginData(login: LoginResponse) {
         viewModelScope.launch {
             dataStoreRepository.saveSessionToken(login.sessionToken,login.userId)
         }
@@ -99,8 +99,8 @@ class SignInViewModel @Inject constructor(
 }
 
 sealed class LoginUiState {
-    object Idle : LoginUiState()
-    object Loading : LoginUiState()
+    data object Idle : LoginUiState()
+    data object Loading : LoginUiState()
     data class Success(val login: LoginResponse) : LoginUiState()
     data class Error(val message: String) : LoginUiState()
 }
