@@ -19,41 +19,56 @@ class ProductRemoteMediator(
     private val productDb: ProductDatabase,
     private val productApi: DetailDeskApiService
 ): RemoteMediator<Int, ProductEntity>() {
+    
+    // Add page tracking
+    private var currentPage = 0
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ProductEntity>
     ): MediatorResult {
         return try {
-            val loadKey = when(loadType){
-                LoadType.REFRESH -> 1
-                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+            val loadKey = when(loadType) {
+                LoadType.REFRESH -> {
+                    currentPage = 0
+                    currentPage
+                }
+                LoadType.PREPEND -> return MediatorResult.Success(
+                    endOfPaginationReached = true
+                )
                 LoadType.APPEND -> {
                     val lastItem = state.lastItemOrNull()
                     if (lastItem == null) {
-                        return MediatorResult.Success(endOfPaginationReached = true)
+                        1
+                    } else {
+                        // Calculate next page based on total items loaded
+                        (state.pages.size + 1)
                     }
-                    (state.pages.size + 1)
                 }
             }
 
             val products = productApi.getAllProducts(
-                page = loadKey.toInt(),
+                page = loadKey,
                 size = state.config.pageSize
             )
+            
             productDb.withTransaction {
                 if(loadType == LoadType.REFRESH) {
                     productDb.dao.clearAll()
                 }
-                val productEntities = products.map { it.toProductEntity(context = context ) }
+                val productEntities = products.map { it.toProductEntity(context = context) }
                 productDb.dao.upsertAll(productEntities)
+            }
+
+            // Update current page if successful
+            if (loadType == LoadType.APPEND) {
+                currentPage = loadKey
             }
 
             MediatorResult.Success(
                 endOfPaginationReached = products.isEmpty()
             )
-    } catch (e: Exception){
-            MediatorResult.Error(e)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             MediatorResult.Error(e)
         }
     }

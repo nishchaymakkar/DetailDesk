@@ -210,6 +210,7 @@ fun ProductItem(
                 })
     }
 }
+/**
 fun String.toByteArray(): ByteArray {
     return Base64.decode(this, Base64.DEFAULT)
 }
@@ -242,3 +243,4 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
     }
     return inSampleSize
 }
+**/
