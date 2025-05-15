@@ -87,7 +87,8 @@ object NetworkModule {
     ): Pager<Int, ProductEntity> {
         return Pager(
             config = PagingConfig(
-                pageSize = 10,  // Increased page size
+                initialLoadSize = 15,
+                pageSize = 5,  // Increased page size
                 enablePlaceholders = false
             ),
             remoteMediator = ProductRemoteMediator(
